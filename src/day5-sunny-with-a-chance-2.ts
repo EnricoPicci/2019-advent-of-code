@@ -9,7 +9,9 @@ export function calculateNextState(initialData: number[], input?: number, output
     const state = buildState(initialData);
     const instructionIterator = instructionIteratorBuilder(state);
     let currentInstruction = instructionIterator.next();
+    let newInstructionPointer: number;
     while (!currentInstruction.done) {
+        newInstructionPointer = undefined;
         const opCode = currentInstruction.value.id;
         if (opCode === '99') {
             return calculateResponse(state);
@@ -24,16 +26,47 @@ export function calculateNextState(initialData: number[], input?: number, output
             const valToMult2 = getParameterValue(currentInstruction.value.parameters[1], state);
             state[currentInstruction.value.parameters[2].value].val = valToMult1 * valToMult2;
         } else if (opCode === '03') {
-            // INPUT - ignore the parameter mode for this instruction
+            // INPUT - ignore the parameter mode for this instruction - uses always position mode
             const paramVal = currentInstruction.value.parameters[0].value;
             state[paramVal].val = input;
         } else if (opCode === '04') {
-            // OUTPUT - ignore the parameter mode for this instruction
-            const paramVal = currentInstruction.value.parameters[0].value;
-            const output = state[paramVal].val;
+            const paramVal = getParameterValue(currentInstruction.value.parameters[0], state);
+            const output = paramVal;
             outputFunction(output);
+        } else if (opCode === '05') {
+            // jump-if-true
+            const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state);
+            if (firstParamValue !== 0) {
+                // const secondParamValue = currentInstruction.value.parameters[1].value;
+                const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state);
+                newInstructionPointer = secondParamValue;
+            }
+        } else if (opCode === '06') {
+            // jump-if-false
+            const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state);
+            if (firstParamValue === 0) {
+                // const secondParamValue = currentInstruction.value.parameters[1].value;
+                const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state);
+                newInstructionPointer = secondParamValue;
+            }
+        } else if (opCode === '07') {
+            // less than
+            const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state);
+            const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state);
+            // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            state[thirdParamValue].val = firstParamValue < secondParamValue ? 1 : 0;
+        } else if (opCode === '08') {
+            // equals
+            const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state);
+            const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state);
+            // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            state[thirdParamValue].val = firstParamValue === secondParamValue ? 1 : 0;
+        } else {
+            throw new Error(`Instruction id "${opCode}" not known`);
         }
-        currentInstruction = instructionIterator.next();
+        currentInstruction = instructionIterator.next(newInstructionPointer);
     }
     throw new Error(`End of program not found`);
 }
@@ -47,20 +80,21 @@ export function buildState(initialData: number[]) {
 }
 
 function instructionIteratorBuilder(state: Val[]) {
-    let currentIndex = 0;
+    let instructionPointer = 0;
     const _state = state;
     let lengthOfInstruction: number;
     let _iterationCount = 0;
     const instructionIterator = {
-        next: () => {
-            if (currentIndex < _state.length) {
-                const op = _state[currentIndex];
+        next: (_instructionPointer?: number) => {
+            instructionPointer = _instructionPointer === undefined ? instructionPointer : _instructionPointer;
+            if (instructionPointer < _state.length) {
+                const op = _state[instructionPointer];
                 const opId = ('00' + op.val).slice(-2);
                 lengthOfInstruction = numberOfElementsPerInstruction(opId);
-                const endInstructionIndex = currentIndex + lengthOfInstruction;
-                const instructionElements = _state.slice(currentIndex, endInstructionIndex);
+                const endInstructionIndex = instructionPointer + lengthOfInstruction;
+                const instructionElements = _state.slice(instructionPointer, endInstructionIndex);
                 const instruction = buildInstruction(instructionElements);
-                currentIndex = endInstructionIndex;
+                instructionPointer = endInstructionIndex;
                 _iterationCount++;
                 return { value: instruction, done: false, iteration: _iterationCount };
             }
@@ -101,6 +135,14 @@ function numberOfElementsPerInstruction(instructionId: string) {
             return 2;
         case '04':
             return 2;
+        case '05':
+            return 3;
+        case '06':
+            return 3;
+        case '07':
+            return 4;
+        case '08':
+            return 4;
         case '99':
             return 1;
         default:

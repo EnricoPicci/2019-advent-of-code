@@ -117,8 +117,6 @@ export function getResultNumbersValAsString(numberAndFollowers: NumberAndFollowe
     return followers
         ? followers.reduce((acc, f) => {
               const _precedingNumberAsString = precedingNumberAsString + `${val}`;
-              // const _precedingNumberAsString =
-              //   val === 0 ? "" : precedingNumberAsString + `${val}`;
               const res = getResultNumbersValAsString(f, _precedingNumberAsString);
               acc = acc.concat(res);
               return acc;
