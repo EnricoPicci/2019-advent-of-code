@@ -4,7 +4,7 @@ import { initialState as initialStateForQuiz_day2_1022 } from './day2-1022-progr
 
 import { buildInstruction, buildState, calculateNextState } from './day5-sunny-with-a-chance-2';
 import { solve_day2_1022_program_alarm_Quiz2 } from './day5-day-2-quiz-2.solution';
-import { initialState as initiatStateForQuiz1 } from './day5-sunny-with-a-chance.input-data';
+import { initialState as initialStateForQuiz1 } from './day5-sunny-with-a-chance.input-data';
 
 describe('A - jump-if-true instruction', () => {
     it('A.1 - should jump to the next instruction with position mode', () => {
@@ -203,7 +203,7 @@ describe('f - solution to quizs', () => {
         const outputFunction = (o: number) => {
             outputArray.push(o);
         };
-        calculateNextState(initiatStateForQuiz1, 5, outputFunction);
+        calculateNextState(initialStateForQuiz1, 5, outputFunction);
         expect(outputArray[outputArray.length - 1]).to.equal(6959377);
     });
 });
@@ -292,7 +292,7 @@ describe(`tests from first part of the  exercize`, () => {
             const outputFunction = (o: number) => {
                 outputArray.push(o);
             };
-            calculateNextState(initiatStateForQuiz1, 1, outputFunction);
+            calculateNextState(initialStateForQuiz1, 1, outputFunction);
             expect(outputArray[outputArray.length - 1]).to.equal(16348437);
         });
     });
@@ -303,7 +303,7 @@ describe(`tests from first part of the  exercize`, () => {
             const outputFunction = (o: number) => {
                 outputArray.push(o);
             };
-            calculateNextState(initiatStateForQuiz1, 1, outputFunction);
+            calculateNextState(initialStateForQuiz1, 1, outputFunction);
             expect(outputArray[outputArray.length - 1]).to.equal(16348437);
         });
     });
