@@ -68,3 +68,39 @@ export function allDirectIndirectOrbits(mapAsString: string) {
         return acc;
     }, [] as ObjectInOrbit[]);
 }
+
+//******************************************************************************************************************
+//*****************************    Functions for PART 2 of the exercize           **********************************
+//******************************************************************************************************************
+
+function findImmediateOrbitedObject(orbitingObjectName: string, objectsCatalogue: ObjectsInOrbitCatalogue) {
+    return objectsCatalogue[orbitingObjectName];
+}
+
+export function minimumOrbitalTransfers(
+    fromOrbitingObjectName: string,
+    toOrbitingObjectName: string,
+    objectsCatalogue: ObjectsInOrbitCatalogue,
+) {
+    const fromOrbitedObject = findImmediateOrbitedObject(fromOrbitingObjectName, objectsCatalogue);
+    const toOrbitedObject = findImmediateOrbitedObject(toOrbitingObjectName, objectsCatalogue);
+    const sharedOrbitedObject = fromOrbitedObject.objectsOrbited.find(oo_1 =>
+        toOrbitedObject.objectsOrbited.find(oo_2 => oo_2.name === oo_1.name),
+    );
+    const pathToSharedOrbitedObject_1 = orbitTransfers(fromOrbitedObject, sharedOrbitedObject, objectsCatalogue);
+    const pathToSharedOrbitedObject_2 = orbitTransfers(toOrbitedObject, sharedOrbitedObject, objectsCatalogue);
+    return pathToSharedOrbitedObject_1.concat(pathToSharedOrbitedObject_2);
+}
+
+export function orbitTransfers(from: ObjectInOrbit, to: ObjectInOrbit, objectsCatalogue: ObjectsInOrbitCatalogue) {
+    const _orbitTransfers = [];
+    let toFound = false;
+    let start = objectsCatalogue[from.immediateOrbitedObjectName];
+    while (!toFound) {
+        const end = objectsCatalogue[start.immediateOrbitedObjectName];
+        _orbitTransfers.push({ start, end });
+        toFound = end.name === to.name;
+        start = end;
+    }
+    return _orbitTransfers;
+}
