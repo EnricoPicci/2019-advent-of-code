@@ -4,18 +4,24 @@ type Instruction = {
     parameters: Parameter[];
 };
 type Parameter = { value: number; mode: string };
+type ExitCode = 'END' | 'WAIT FOR INPUT';
 
-export function calculateNextState(initialData: number[], input?: number[], outputFunction = console.log) {
+export function calculateNextState(
+    initialData: number[],
+    input?: number[],
+    outputFunction = console.log,
+    instructionPointer: number = undefined,
+) {
     const state = buildState(initialData);
     const instructionIterator = instructionIteratorBuilder(state);
-    let currentInstruction = instructionIterator.next();
+    let currentInstruction = instructionIterator.next(instructionPointer);
     let newInstructionPointer: number;
     let inputPointer = 0;
     while (!currentInstruction.done) {
         newInstructionPointer = undefined;
         const opCode = currentInstruction.value.id;
         if (opCode === '99') {
-            return calculateResponse(state);
+            return calculateResponse(state, 'END');
         } else if (opCode === '01') {
             // SUM
             const valToAdd1 = getParameterValue(currentInstruction.value.parameters[0], state);
@@ -29,9 +35,17 @@ export function calculateNextState(initialData: number[], input?: number[], outp
         } else if (opCode === '03') {
             // INPUT - ignore the parameter mode for this instruction - uses always position mode
             const paramVal = currentInstruction.value.parameters[0].value;
+            if (inputPointer >= input.length) {
+                return calculateResponse(
+                    state,
+                    'WAIT FOR INPUT',
+                    currentInstruction.instructionPointer - numberOfElementsPerInstruction('03'),
+                );
+            }
             state[paramVal].val = input[inputPointer];
             inputPointer++;
         } else if (opCode === '04') {
+            // OUTPUT
             const paramVal = getParameterValue(currentInstruction.value.parameters[0], state);
             const output = paramVal;
             outputFunction(output);
@@ -98,9 +112,9 @@ function instructionIteratorBuilder(state: Val[]) {
                 const instruction = buildInstruction(instructionElements);
                 instructionPointer = endInstructionIndex;
                 _iterationCount++;
-                return { value: instruction, done: false, iteration: _iterationCount };
+                return { value: instruction, done: false, iteration: _iterationCount, instructionPointer };
             }
-            return { value: null, done: true, iteration: _iterationCount };
+            return { value: null, done: true, iteration: _iterationCount, instructionPointer };
         },
     };
     return instructionIterator;
@@ -159,6 +173,9 @@ function calculateResponse(
     newState: {
         val: number;
     }[],
+    exitCode: ExitCode,
+    instructionPointer?: number,
 ) {
-    return newState.map(val => val.val);
+    const state = newState.map(val => val.val);
+    return { state, exitCode, instructionPointer };
 }

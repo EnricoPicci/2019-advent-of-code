@@ -251,7 +251,7 @@ describe(`tests from first part of the  exercize`, () => {
             const initialData = [3, 0, 99];
             const expectedNextState = [100, 0, 99];
             const result = calculateNextState(initialData, input);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
     });
 
@@ -273,7 +273,7 @@ describe(`tests from first part of the  exercize`, () => {
             const initialData = [1002, 4, 3, 4, 33];
             const expectedNextState = [1002, 4, 3, 4, 99];
             const result = calculateNextState(initialData);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
     });
 
@@ -282,7 +282,7 @@ describe(`tests from first part of the  exercize`, () => {
             const initialData = [1101, 100, -1, 4, 0];
             const expectedNextState = [1101, 100, -1, 4, 99];
             const result = calculateNextState(initialData);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
     });
 
@@ -319,42 +319,42 @@ describe(`tests from day2 exercize`, () => {
             const initialState = [1, 0, 0, 0, 99];
             const expectedNextState = [2, 0, 0, 0, 99];
             const result = calculateNextState(initialState);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
 
         it('1.2 - calculates the next state for the second example', () => {
             const initialState = [2, 3, 0, 3, 99];
             const expectedNextState = [2, 3, 0, 6, 99];
             const result = calculateNextState(initialState);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
 
         it('1.3 - calculates the next state for the third example', () => {
             const initialState = [2, 4, 4, 5, 99, 0];
             const expectedNextState = [2, 4, 4, 5, 99, 9801];
             const result = calculateNextState(initialState);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
 
         it('1.4 - calculates the next state for the fourth example', () => {
             const initialState = [1, 1, 1, 4, 99, 5, 6, 0, 99];
             const expectedNextState = [30, 1, 1, 4, 2, 5, 6, 0, 99];
             const result = calculateNextState(initialState);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
 
         it('1.5 - calculates the next state for the main example', () => {
             const initialState = [1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50];
             const expectedNextState = [3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50];
             const result = calculateNextState(initialState);
-            assertEquals(expectedNextState, result);
+            assertEquals(expectedNextState, result.state);
         });
     });
 
     describe('2 - solution to quizs', () => {
         it('2.1 - solution to quiz 1', () => {
             const result = calculateNextState(initialStateForQuiz_day2_1022);
-            expect(result[0]).to.equal(466656);
+            expect(result.state[0]).to.equal(466656);
         });
         it('2.2 - solution to quiz 2', () => {
             const solution = solve_day2_1022_program_alarm_Quiz2();
