@@ -433,6 +433,15 @@ describe('13 - quizs from day 9', () => {
         calculateNextState(InputDataForDay9FirstPartQuiz, input, outputFunction);
         expect(output).to.equal(3429606717);
     });
+    it(`13.2 - secind quiz`, () => {
+        const input = [2];
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(InputDataForDay9FirstPartQuiz, input, outputFunction);
+        expect(output).to.equal(33679);
+    });
 });
 
 function assertEquals(expected: number[], actual: number[]) {
