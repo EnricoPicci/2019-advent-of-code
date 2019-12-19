@@ -364,6 +364,77 @@ describe(`tests from day2 exercize`, () => {
     });
 });
 
+//*******************************************************************************************************
+//*****************  tests from day9 exercize which introduces relative mode           ******************
+//*******************************************************************************************************
+describe('10 - relative mode', () => {
+    it(`10.1 - set twice the relative base and then outputs a value from memory outside the initial program
+    being outside the memory occupied by the initial program the value in output is zero`, () => {
+        const initialData = [109, 2000, 109, 19, 204, -34, 99];
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(initialData, null, outputFunction);
+        expect(output).to.equal(0);
+    });
+});
+describe('11 - examples from day 9', () => {
+    it(`11.1 - first example`, () => {
+        const initialData = [109, 1, 204, -1, 1001, 100, 1, 100, 1008, 100, 16, 101, 1006, 101, 0, 99];
+        let output: number[] = [];
+        const outputFunction = (o: number) => {
+            output.push(o);
+        };
+        calculateNextState(initialData, null, outputFunction).state;
+        output.forEach((s, i) => expect(s).to.equal(initialData[i]));
+    });
+    it(`11.2 - second example`, () => {
+        const initialData = [1102, 34915192, 34915192, 7, 4, 7, 99, 0];
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(initialData, null, outputFunction).state;
+        expect(output.toString().length).to.equal(16);
+    });
+    it(`11.3 - third example`, () => {
+        const bigNumber = 1125899906842624;
+        const initialData = [104, bigNumber, 99];
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(initialData, null, outputFunction).state;
+        expect(output).to.equal(bigNumber);
+    });
+});
+describe('12 - additional examples on relative mode', () => {
+    it(`12.1 - echo program`, () => {
+        const initialData = [109, 5, 203, 0, 104, 0, 99];
+        let input = 11;
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(initialData, [input], outputFunction);
+        expect(output).to.equal(input);
+    });
+});
+
+import { InputDataForDay9FirstPartQuiz } from './day9-sensor-boost.input-data';
+describe('13 - quizs from day 9', () => {
+    it(`13.1 - first quiz`, () => {
+        const input = [1];
+        let output: number;
+        const outputFunction = (o: number) => {
+            output = o;
+        };
+        calculateNextState(InputDataForDay9FirstPartQuiz, input, outputFunction);
+        expect(output).to.equal(3429606717);
+    });
+});
+
 function assertEquals(expected: number[], actual: number[]) {
     actual.forEach((n, index) => expect(n).to.equal(expected[index], `error at position ${index}`));
 }

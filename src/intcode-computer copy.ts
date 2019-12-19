@@ -32,19 +32,28 @@ export function calculateNextState(
             const valToAdd1 = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
             const valToAdd2 = getParameterValue(currentInstruction.value.parameters[1], state, relativeBase);
             // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
-            const thirdParamValue = getAddressFromParameter(currentInstruction.value.parameters[2], relativeBase);
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            const mode = currentInstruction.value.parameters[2].mode;
+            if (mode !== '0') {
+                console.log(`>>>>>>>>>>>>>>>>>>>>mode for sum ${mode}`);
+            }
             readFromState(thirdParamValue, state).val = valToAdd1 + valToAdd2;
         } else if (opCode === '02') {
             // MULT
             const valToMult1 = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
             const valToMult2 = getParameterValue(currentInstruction.value.parameters[1], state, relativeBase);
             // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
-            const thirdParamValue = getAddressFromParameter(currentInstruction.value.parameters[2], relativeBase);
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            const mode = currentInstruction.value.parameters[2].mode;
+            if (mode !== '0') {
+                console.log(`>>>>>>>>>>>>>>>>>>>>mode for mul ${mode}`);
+            }
             readFromState(thirdParamValue, state).val = valToMult1 * valToMult2;
         } else if (opCode === '03') {
             // INPUT
             // ignore the parameter mode for this instruction - uses always position mode
-            const paramVal = getAddressFromParameter(currentInstruction.value.parameters[0], relativeBase);
+            const param = currentInstruction.value.parameters[0];
+            const paramVal = param.mode === '0' ? param.value : param.value + relativeBase;
             if (inputPointer >= input.length) {
                 return calculateResponse(
                     state,
@@ -78,14 +87,22 @@ export function calculateNextState(
             const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
             const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state, relativeBase);
             // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
-            const thirdParamValue = getAddressFromParameter(currentInstruction.value.parameters[2], relativeBase);
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            const mode = currentInstruction.value.parameters[2].mode;
+            if (mode !== '0') {
+                console.log(`>>>>>>>>>>>>>>>>>>>>mode for less than ${mode}`);
+            }
             readFromState(thirdParamValue, state).val = firstParamValue < secondParamValue ? 1 : 0;
         } else if (opCode === '08') {
             // equals
             const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
             const secondParamValue = getParameterValue(currentInstruction.value.parameters[1], state, relativeBase);
             // from the instructions: "Parameters that an instruction writes to will never be in immediate mode."
-            const thirdParamValue = getAddressFromParameter(currentInstruction.value.parameters[2], relativeBase);
+            const thirdParamValue = currentInstruction.value.parameters[2].value;
+            const mode = currentInstruction.value.parameters[2].mode;
+            if (mode !== '0') {
+                console.log(`>>>>>>>>>>>>>>>>>>>>mode for equals ${mode}`);
+            }
             readFromState(thirdParamValue, state).val = firstParamValue === secondParamValue ? 1 : 0;
         } else if (opCode === '09') {
             // adjusts the relative base
@@ -123,9 +140,6 @@ function readFromState(address: number, state: Val[]) {
         }
     }
     return state[address];
-}
-function getAddressFromParameter(parameter: Parameter, relativeBase: number) {
-    return parameter.mode === '0' ? parameter.value : parameter.value + relativeBase;
 }
 
 export function buildState(initialData: number[]) {
