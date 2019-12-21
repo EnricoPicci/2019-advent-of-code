@@ -1,3 +1,5 @@
+import { chunkString } from "./utils";
+
 export function numberOfLayers(imageWidth: number, imageHeight: number, inputData: string) {
     const inputDataLength = inputData.length;
     const imageSize = imageWidth * imageHeight;
@@ -12,11 +14,6 @@ export function numberOfLayers(imageWidth: number, imageHeight: number, inputDat
 function layers(imageWidth: number, imageHeight: number, inputData: string) {
     return chunkString(inputData, imageWidth * imageHeight);
 }
-// https://stackoverflow.com/a/7033662/5699993
-function chunkString(str: string, length: number) {
-    return str.match(new RegExp('.{1,' + length + '}', 'g'));
-}
-
 export function layerWithMinNumberOfDigitOccurrences(
     digit: string,
     imageWidth: number,

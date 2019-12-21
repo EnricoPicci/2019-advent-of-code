@@ -9,20 +9,8 @@
         "noUnusedParameters": true,
         "resolveJsonModule": true
     },
-    "include": [
-        "*.ts",
-        "bin/*.ts",
-        "src/*.ts",
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "node_modules"
-    ],
-    "typeRoots": [
-        "node_modules/@types"
-    ],
-    "lib": [
-        "es2016",
-        "dom"
-    ]
+    "include": ["*.ts", "bin/*.ts", "src/*.ts", "src/**/*.ts"],
+    "exclude": ["node_modules"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom"]
 }
