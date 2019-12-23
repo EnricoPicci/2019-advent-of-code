@@ -5,6 +5,12 @@ type Instruction = {
 };
 type Parameter = { value: number; mode: string };
 type ExitCode = 'END' | 'WAIT FOR INPUT';
+export type IncodeComputerState = {
+    state: number[];
+    output: number[];
+    exitCode: ExitCode;
+    instructionPointer: number;
+};
 
 export function calculateNextState(
     initialData: number[],
@@ -19,6 +25,7 @@ export function calculateNextState(
     let newInstructionPointer: number;
     let inputPointer = 0;
     let relativeBase = 0;
+    const output = [];
     while (!currentInstruction.done) {
         newInstructionPointer = undefined;
         const opCode = currentInstruction.value.id;
@@ -26,7 +33,7 @@ export function calculateNextState(
             console.log(opCode);
         }
         if (opCode === '99') {
-            return calculateResponse(state, 'END');
+            return calculateResponse(state, output, 'END');
         } else if (opCode === '01') {
             // SUM
             const valToAdd1 = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
@@ -48,6 +55,7 @@ export function calculateNextState(
             if (inputPointer >= input.length) {
                 return calculateResponse(
                     state,
+                    output,
                     'WAIT FOR INPUT',
                     currentInstruction.instructionPointer - numberOfElementsPerInstruction('03'),
                 );
@@ -57,8 +65,11 @@ export function calculateNextState(
         } else if (opCode === '04') {
             // OUTPUT
             const paramVal = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
-            const output = paramVal;
-            outputFunction(output);
+            output.push(paramVal);
+            outputFunction(paramVal);
+            if (log) {
+                console.log('>>>>>>>>>>>>>>>output', paramVal);
+            }
         } else if (opCode === '05') {
             // jump-if-true
             const firstParamValue = getParameterValue(currentInstruction.value.parameters[0], state, relativeBase);
@@ -212,9 +223,10 @@ function calculateResponse(
     newState: {
         val: number;
     }[],
+    output: number[] = [],
     exitCode: ExitCode,
     instructionPointer?: number,
 ) {
     const state = newState.map(val => val.val);
-    return { state, exitCode, instructionPointer };
+    return { state, exitCode, output, instructionPointer };
 }

@@ -390,6 +390,6 @@ describe('6 - examples part 2', () => {
 describe('g - quizs', () => {
     it(`g.1 - second quiz`, () => {
         const result = solutionToQuiz2();
-        expect(result).to.equal(284);
+        expect(result).to.equal(404);
     });
 });
