@@ -141,10 +141,14 @@ describe('2 - painterRobotGenerator and squaresPainted', () => {
     });
 });
 
-describe('3 - paint', () => {
-    it('3.1 - paints the plate and counts the squares painted', () => {
-        const squares = paint(IntcodeProgramForPaintingRobot);
+describe('f - quizs', () => {
+    it('3.1_1 - quiz part 1', () => {
+        const squares = paint(IntcodeProgramForPaintingRobot, 0);
         const _squaresPainted = squaresPainted(squares);
         expect(_squaresPainted.length).to.equal(2016);
+    });
+    it('3.2 - quiz part 2', () => {
+        const squares = paint(IntcodeProgramForPaintingRobot, 1);
+        printSquares(squares);
     });
 });

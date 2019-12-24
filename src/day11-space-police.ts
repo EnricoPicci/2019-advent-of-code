@@ -1,4 +1,4 @@
-import { calculateNextState } from './intcode-computer';
+import { intcodeComputer } from './intcode-computer-1';
 
 type Position = { x: number; y: number };
 
@@ -87,9 +87,10 @@ export function printSquares(squares) {
         { minX: 0, maxX: 0 } as { minX: number; maxX: number },
     );
     const _squaresOrderedPerXandY = _squaresOrderedPerY.map(line => {
-        const _line: number[] = [];
+        const _line: string[] = [];
         for (let i = minMaxX.minX; i <= minMaxX.maxX; i++) {
-            _line.push(line[i] || 0);
+            const colorToPaint = line[i] === 1 ? '1' : ' ';
+            _line.push(colorToPaint);
         }
         return _line;
     });
@@ -102,32 +103,21 @@ function sortKeys(dictionary: { [k: number]: any }) {
         .sort((a, b) => b - a);
 }
 
-export function paint(intcodeProgram: number[]) {
+export function paint(intcodeProgram: number[], statingColor: number) {
     let _squares: {
         [y: number]: {
             [x: number]: BlackWhite;
         };
     };
     const painterRobot = painterRobotGenerator();
-    let output: number[] = [];
-    const outputFunction = (o: number) => {
-        output.push(o);
-    };
-    let nextState = calculateNextState(intcodeProgram, [0], outputFunction);
-    let iter = 0;
-    while (nextState.exitCode !== 'END') {
-        const color = nextState.output[0] as BlackWhite;
-        const moveInstruction = nextState.output[1] as TurnLeftRightCommand;
+    let _intcodeComputer = intcodeComputer(intcodeProgram);
+    let intcodeComputerResponse = _intcodeComputer([statingColor]);
+    while (intcodeComputerResponse.exitCode !== 'END') {
+        const color = intcodeComputerResponse.output[0] as BlackWhite;
+        const moveInstruction = intcodeComputerResponse.output[1] as TurnLeftRightCommand;
         const { squares, colorSeenByCamera } = painterRobot(color, moveInstruction);
         _squares = squares;
-        nextState = calculateNextState(
-            nextState.state,
-            [colorSeenByCamera],
-            outputFunction,
-            nextState.instructionPointer,
-        );
-        iter++;
+        intcodeComputerResponse = _intcodeComputer([colorSeenByCamera]);
     }
-    console.log('Iterations', iter);
     return _squares;
 }
