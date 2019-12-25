@@ -197,5 +197,5 @@ describe(' g- quizs', () => {
         const moons = scanMoons(input);
         const steps = countStepsToReturnToTheSamePosition(moons);
         expect(steps).to.equal(583523031727256);
-    });
+    }).timeout(100000);
 });
