@@ -1,4 +1,5 @@
 import { intcodeComputer } from './intcode-computer-1';
+import { printArea } from './utils';
 
 type Position = { x: number; y: number };
 
@@ -64,43 +65,9 @@ export function squaresPainted(squares: { [y: number]: { [x: number]: BlackWhite
         return acc;
     }, new Array<any>());
 }
-// export function squaresPainted(squares: { [y: number]: { [x: number]: BlackWhite } }) {
-//     const lines = Object.values(squares);
-//     return lines.reduce((acc, line) => {
-//         const colors = Object.values(line);
-//         acc.push(...colors);
-//         return acc;
-//     }, new Array<BlackWhite>());
-// }
 
 export function printSquares(squares) {
-    const _squaresOrderedPerY = sortKeys(squares).map(y => squares[y]);
-    const minMaxX = _squaresOrderedPerY.reduce(
-        (acc, val) => {
-            const xs = sortKeys(val);
-            const thisMinX = Math.min(...xs);
-            const thisMaxX = Math.max(...xs);
-            const minX = Math.min(acc.minX, thisMinX);
-            const maxX = Math.max(acc.maxX, thisMaxX);
-            return { minX, maxX };
-        },
-        { minX: 0, maxX: 0 } as { minX: number; maxX: number },
-    );
-    const _squaresOrderedPerXandY = _squaresOrderedPerY.map(line => {
-        const _line: string[] = [];
-        for (let i = minMaxX.minX; i <= minMaxX.maxX; i++) {
-            const colorToPaint = line[i] === 1 ? '1' : ' ';
-            _line.push(colorToPaint);
-        }
-        return _line;
-    });
-    const lines = _squaresOrderedPerXandY.map(line => line.join(''));
-    lines.forEach(l => console.log(l));
-}
-function sortKeys(dictionary: { [k: number]: any }) {
-    return Object.keys(dictionary)
-        .map(k => parseInt(k))
-        .sort((a, b) => b - a);
+    printArea(squares, color => (color === 1 ? '1' : ' '));
 }
 
 export function paint(intcodeProgram: number[], statingColor: number) {
