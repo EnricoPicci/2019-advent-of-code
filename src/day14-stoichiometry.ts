@@ -96,9 +96,7 @@ export function calculateQuantitiesRequired(
 }
 
 export function calculateNumberOfReactions(quantityRequired: number, minimalQuantity: number) {
-    const isMultiple = quantityRequired % minimalQuantity === 0;
-    const integerPart = Math.floor(quantityRequired / minimalQuantity);
-    return isMultiple ? integerPart : integerPart + 1;
+    return Math.ceil(quantityRequired / minimalQuantity);
 }
 
 export function calculateRequiredOreForOneFuel(chemicals: Chemicals) {
@@ -107,4 +105,47 @@ export function calculateRequiredOreForOneFuel(chemicals: Chemicals) {
 
 function isChemicalMadeOnlyOfOre(chemical: Chemical) {
     return !!chemical.input.find(e => e.chemical === ORE);
+}
+
+export function calculateFuelProduced(quantityOfOre: number, chemicals: Chemicals) {
+    const oreRequiredToProduceFirstFuel = calculateRequiredOreForOneFuel(chemicals);
+    if (oreRequiredToProduceFirstFuel > quantityOfOre) {
+        return 0;
+    }
+    let oreRequiredToEmptyStock = oreRequiredToProduceFirstFuel;
+    let fuelProducedInOneCycleToEmptyStock = 1;
+    let counter = 0;
+    while (!isStockEmpty(chemicals)) {
+        counter++;
+        if (counter % 1000000 === 0) {
+            console.log(counter);
+        }
+        oreRequiredToEmptyStock = oreRequiredToEmptyStock + calculateRequiredOreForOneFuel(chemicals);
+        if (oreRequiredToEmptyStock > quantityOfOre) {
+            return fuelProducedInOneCycleToEmptyStock;
+        }
+        fuelProducedInOneCycleToEmptyStock++;
+    }
+    const numberOfCycles = Math.floor(quantityOfOre / oreRequiredToEmptyStock);
+    let lastFuelProduced = 0;
+    let oreLeft = quantityOfOre - oreRequiredToEmptyStock * numberOfCycles;
+    console.log('Ore left', oreLeft);
+    console.log('Number of cycles', numberOfCycles);
+    console.log('Fuel produced in one cycle', fuelProducedInOneCycleToEmptyStock);
+    if (oreLeft < oreRequiredToProduceFirstFuel) {
+        return fuelProducedInOneCycleToEmptyStock * numberOfCycles;
+    }
+    while (oreLeft > 0) {
+        lastFuelProduced++;
+        oreLeft = oreLeft - calculateRequiredOreForOneFuel(chemicals);
+    }
+    return fuelProducedInOneCycleToEmptyStock * numberOfCycles + lastFuelProduced;
+}
+
+export function isStockEmpty(chemicals: Chemicals) {
+    return (
+        Object.values(chemicals)
+            .map(c => c.inStock)
+            .reduce((acc, val) => acc + val, 0) === 0
+    );
 }
