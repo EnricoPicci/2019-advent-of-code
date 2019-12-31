@@ -15,6 +15,7 @@ import {
     fillDistance,
     findClosestTraversedPoints,
     findShortestPathToOxigeneSystem,
+    minutesToFillWithOxigeneTheEntireArea,
 } from './day15-oxigen-system';
 import { IntcodeProgramForRepairDroid } from './day15-oxigen-system.input-data';
 
@@ -648,10 +649,14 @@ describe('8 - findShortestPath', () => {
     });
 });
 
-describe('9 - findShortestPathToOxigeneSystem', () => {
-    it('9.1 - finds the oxigen system', () => {
-        const oxigeSystemPosition = findShortestPathToOxigeneSystem(IntcodeProgramForRepairDroid);
-        expect(oxigeSystemPosition).to.be.not.undefined;
+describe('f - quizs', () => {
+    it('f.1 - first quiz - find the length of the shortest path to the oxigen system', () => {
+        const shortestPath = findShortestPathToOxigeneSystem(IntcodeProgramForRepairDroid);
+        expect(shortestPath.length).to.equal(412);
+    });
+    it('f.2 - second quiz - find how many minutes it takes to fill the entire area with oxigene', () => {
+        const minutes = minutesToFillWithOxigeneTheEntireArea(IntcodeProgramForRepairDroid);
+        expect(minutes).to.equal(418);
     });
 });
 

@@ -190,15 +190,30 @@ function _fillDistance(from: Point[], to: Point, allPoints: Point[]) {
         _from = closestPoints;
     }
     return allPoints;
-    // const closestPoints = findClosestTraversedPointsWithDistanceNotYetDefined(from, allPoints);
-    // // const closestPointsWithDistanceNotYetDefined = closestPoints.filter(p => !p.distance);
-    // closestPoints.forEach(p => (p.distance = distance));
-    // const target = closestPoints.find(p => areSamePoint(p, to));
-    // if (target) {
-    //     target.distance = distance;
-    //     return allPoints;
-    // }
-    // return _fillDistance(closestPoints, to, allPoints, distance + 1);
+}
+
+export function fillDistanceToAllPoints(from: Point, map: Map) {
+    const allPoints = traversedPointsInMap(map);
+    let _from = allPoints.find(p => areSamePoint(p, from));
+    if (!_from) {
+        throw new Error(`we have a problem`);
+    }
+    _from.distance = 0;
+    const pointsWithDistanceNotYetDefined = allPoints.filter(p => !p.distance);
+    if (pointsWithDistanceNotYetDefined.length === 0) {
+        return allPoints;
+    }
+    let _froms = [from];
+    let _distance = 0;
+    while (true) {
+        _distance++;
+        const closestPoints = findClosestTraversedPointsWithDistanceNotYetDefined(_froms, allPoints);
+        if (closestPoints.length === 0) {
+            return allPoints;
+        }
+        closestPoints.forEach(p => (p.distance = _distance));
+        _froms = closestPoints;
+    }
 }
 
 export function traverseEntireArea(intcodeProgramForRepairDroid: number[]) {
@@ -260,6 +275,14 @@ export function findShortestPathToOxigeneSystem(intcodeProgramForRepairDroid: nu
     const map = traverseEntireArea(intcodeProgramForRepairDroid);
     const oxigenSystemPosition = pointsInMap(map).find(p => p.val === 'O');
     return findShortestPath({ x: 0, y: 0 }, oxigenSystemPosition, map);
+}
+
+export function minutesToFillWithOxigeneTheEntireArea(intcodeProgramForRepairDroid: number[]) {
+    const map = traverseEntireArea(intcodeProgramForRepairDroid);
+    const oxigenSystemPosition = pointsInMap(map).find(p => p.val === 'O');
+    const pointsWithDistance = fillDistanceToAllPoints(oxigenSystemPosition, map);
+    const distances = pointsWithDistance.map(p => p.distance);
+    return Math.max(...distances);
 }
 
 // extra stuff
