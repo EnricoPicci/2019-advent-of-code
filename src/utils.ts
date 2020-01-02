@@ -2,6 +2,13 @@
 export function chunkString(str: string, length: number) {
     return str.match(new RegExp('.{1,' + length + '}', 'g'));
 }
+// https://stackoverflow.com/a/8495740/5699993
+export function array_chunks(array: any[], chunk_size: number) {
+    return Array(Math.ceil(array.length / chunk_size))
+        .fill(null)
+        .map((_, index) => index * chunk_size)
+        .map(begin => array.slice(begin, begin + chunk_size));
+}
 
 export function printArea(
     area: {
